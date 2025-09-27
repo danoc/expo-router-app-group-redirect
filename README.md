@@ -5,6 +5,7 @@ This is a minimal reproduction of a bug in Expo Router where group names briefly
 ## The Bug
 
 When using **server-side rendering** (`output: "server"`) and navigating to the root URL (`/`) without an index file, Expo Router:
+
 1. Initially shows `/(app)/foo` in the browser URL (exposing the group name)
 2. Then strips the `(app)` portion client-side
 3. Results in the final URL `/foo`
@@ -18,11 +19,13 @@ This creates a flicker where users briefly see the internal file structure in th
 ## Setup
 
 1. Install dependencies:
+
 ```bash
-npm install --legacy-peer-deps
+npm install
 ```
 
 2. Start the development server:
+
 ```bash
 npm run web
 ```
@@ -48,18 +51,24 @@ Note: There is intentionally no `app/index.tsx` file.
 ## Critical Configuration
 
 In `app.json`:
+
 ```json
 {
   "web": {
-    "output": "server"  // THIS CAUSES THE BUG
+    "output": "server" // THIS CAUSES THE BUG
   },
   "plugins": [
-    ["expo-router", {
-      "redirects": [{
-        "source": "/index",
-        "destination": "/foo"
-      }]
-    }]
+    [
+      "expo-router",
+      {
+        "redirects": [
+          {
+            "source": "/index",
+            "destination": "/foo"
+          }
+        ]
+      }
+    ]
   ]
 }
 ```
@@ -71,6 +80,7 @@ The URL should directly show `/foo` without exposing the `(app)` group name.
 ## Actual Behavior
 
 With SSR enabled, the URL shows:
+
 1. `/(app)/foo` (briefly visible)
 2. `/foo` (after client-side cleanup)
 
